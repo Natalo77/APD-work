@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=size
+comment0.target=HashtableWrapper(int)
+comment1.params=key\ value
+comment1.target=java.lang.Object\ put(java.lang.Object,\ java.lang.Object)
+numComments=2
