@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Created by u1661665(Joshua Pritchard) on 10/12/2018.
- * Version: 10/12/2018
+ * Version: 14/01/2019
  */
 public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> implements TopologicalSort<T>
 {
@@ -40,7 +40,11 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
             noPredecessors = getNoPredecessorNode();
         }
 
-        //TODO: if sorted not same size as nodes as graph then not acyclic.
+        //if sorted not same size as nodes as graph then not acyclic.
+        if(sorted.size() != getNoOfNodes())
+        {
+            throw new GraphError("Graph not acyclic");
+        }
 
         //Return the topological sort.
         return sorted;
@@ -48,8 +52,8 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
 
     private void populateNodesMap() throws GraphError
     {
-        //TODO: Two stage. 1. set up every node in hashmap. 2. Neighbours iteration.
-
+        /*
+        //---OLD IMPLEMENTATION---
         //Used for keeping track of the reference count of the current node being calculated.
         int referenceCount;
 
@@ -74,10 +78,34 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
             //Add the calculated node along with its reference count to the hashmap.
             nodes.put(node, referenceCount);
         }
+        //---END OF OLD IMPLEMENTATION---
+        */
+
+
+        //Two stage operation.
+
+        //Add each node to the hashmap.
+        for(T node: getNodes())
+        {
+            nodes.put(node, 0);
+        }
+
+        //For each node.
+        for(T node: getNodes())
+        {
+            //For each neighbour
+            for(T neighbour: getNeighbours(node))
+            {
+                //Increase the reference count stored against it by 1.
+                nodes.replace(node, nodes.get(node) + 1);
+            }
+        }
     }
 
     private T getNoPredecessorNode()
     {
+        //TODO: Look at this algorithm reaching a point where no ref 0 node can be found.
+
         //For each node in the graph.
         for(T node : getNodes())
         {
@@ -90,7 +118,7 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
         }
 
         //Base return null (Should never occur if this method is used in accordance with a correct
-        // reference counting topological sort algorithn.
+        // reference counting topological sort algorithm).
         return null;
     }
 

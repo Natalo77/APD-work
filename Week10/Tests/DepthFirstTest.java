@@ -1,5 +1,6 @@
 import graph.AdjacencyGraph;
 import graph.DepthFirstTraversal;
+import graph.Graph;
 import graph.GraphError;
 import org.junit.Test;
 
@@ -35,6 +36,12 @@ public class DepthFirstTest<T> extends AdjacencyGraph<T>
         intGraph.add(1, 2);
         intGraph.add(2, 3);
         intGraph.add(3, 1);
+
+        /*
+            1 -> 2 -> 3
+            ^         |
+            |_________|
+         */
 
         ArrayList<Integer> returnedList = (ArrayList<Integer>) intGraph.traverse();
 
@@ -190,6 +197,12 @@ public class DepthFirstTest<T> extends AdjacencyGraph<T>
         stringGraph.add("second", "third");
         stringGraph.add("third", "first");
 
+        /*
+            first -> second -> third
+              ^                  |
+              |__________________|
+         */
+
         ArrayList<String> returnedList = (ArrayList<String>) stringGraph.traverse();
 
         if (returnedList.get(0).equals("first") && returnedList.get(1).equals("second") && returnedList.get(2).equals("third"))
@@ -207,6 +220,32 @@ public class DepthFirstTest<T> extends AdjacencyGraph<T>
         else
         {
             fail("Correct path not returned with a string graph");
+        }
+    }
+
+    /**
+     * Creates an empty graph with no nodes or edges then attempts to traverse it. Should throw a graphError.
+     *
+     * @throws GraphError if any invalid attempt is made upon the graph, aside from trying to traverse it whilst
+     *                      empty.
+     */
+    @Test
+    public void testEmptyGraphException() throws GraphError
+    {
+        //Create a new graph.
+        DepthFirstTraversal<Integer> emptyIntGraph = new DepthFirstTraversal<>();
+
+        //Add no nodes or edges.
+
+        //Attempt to traverse the graph.
+        try
+        {
+            emptyIntGraph.traverse();
+            fail("Empty graph traversal allowed.");
+        }
+        catch(GraphError e)
+        {
+
         }
     }
 }
