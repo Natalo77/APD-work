@@ -13,12 +13,21 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
     private HashMap<T, Integer> nodes;
     private ArrayList<T> sorted;
 
+    /**
+     * Creates a default topological sort object and initializes the required data structures.
+     */
     public ReferenceCountingTopologicalSort()
     {
         this.nodes = new HashMap<>();
         this.sorted = new ArrayList<>();
     }
 
+    /**
+     * Gets a topological sort of the graph held within this topological sort object.
+     *
+     * @return A List(T) containing a topological sort of the graph described by this topological sort object.
+     * @throws GraphError if any illegal attempts to access nodes or edges of the graph are made.
+     */
     @Override
     public List<T> getSort() throws GraphError
     {
@@ -40,16 +49,15 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
             noPredecessors = getNoPredecessorNode();
         }
 
-        //if sorted not same size as nodes as graph then not acyclic.
-        if(sorted.size() != getNoOfNodes())
-        {
-            throw new GraphError("Graph not acyclic");
-        }
-
         //Return the topological sort.
         return sorted;
     }
 
+    /**
+     * Used by the sorter to create a modifiable list of object value pairs concerning nodes and their reference count.
+     *
+     * @throws GraphError if any illegal attempts to access nodes or edges within this graph are made.
+     */
     private void populateNodesMap() throws GraphError
     {
         /*
@@ -97,12 +105,18 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
             for(T neighbour: getNeighbours(node))
             {
                 //Increase the reference count stored against it by 1.
-                nodes.replace(node, nodes.get(node) + 1);
+                nodes.replace(neighbour, nodes.get(neighbour) + 1);
             }
         }
     }
 
-    private T getNoPredecessorNode()
+    /**
+     * Used by the sorter to return a node within the graph that has no predecessors i.e. it has a reference count of 0.
+     *
+     * @return an element T contained within the graph that has no predecessors.
+     * @throws GraphError if any illegal attempts to access the nodes or edges of this graph are made.
+     */
+    private T getNoPredecessorNode() throws GraphError
     {
         //TODO: Look at this algorithm reaching a point where no ref 0 node can be found.
 
@@ -117,11 +131,24 @@ public class ReferenceCountingTopologicalSort<T> extends AdjacencyGraph<T> imple
             }
         }
 
+        //What if there are no nodes with a zero reference count but there are still some left to be added.
+        if(sorted.size() != getNodes().size())
+        {
+            throw new GraphError("Graph not acyclic");
+        }
+
         //Base return null (Should never occur if this method is used in accordance with a correct
         // reference counting topological sort algorithm).
         return null;
     }
 
+    /**
+     * Used by the sorter to remove a node from consideration i.e. prevent it being added to the graph twice and
+     * decrease the reference count of all appropriate nodes.
+     *
+     * @param node a T element specifying the node within the graph to remove.
+     * @throws GraphError if any illegal attempts to access nodes or edges within the graph are made.
+     */
     private void removeFromGraph(T node) throws GraphError
     {
         //For each successor of the passed in node.
