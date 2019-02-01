@@ -25,9 +25,36 @@ public class Peru extends Railway {
      */
     public void runTrain() throws RailwaySystemError {
     	Clock clock = getRailwaySystem().getClock();
-    	while (!clock.timeOut()) {
+    	while (!clock.timeOut())
+		{
+		    //move to start of pass.
     		choochoo();
-    		crossPass();
+
+    		//Find out what the other railway is
+    		Railway otherRail = getRailwaySystem().getNextRailway(this);
+
+            //Put a stone in his own basket.
+            this.getBasket().putStone(this);
+
+    		//if the other basket has a stone in
+            while(otherRail.getBasket().hasStone(otherRail))
+            {
+                //Remove the stone before having a siesta.
+                this.getBasket().takeStone(this);
+
+                //take a siesta.
+                siesta();
+
+                //take the stone out immediately after.
+                this.getBasket().putStone(this);
+            }
+
+            //cross the pass
+            crossPass();
+
+            //remove the stone from your own basket.
+            this.getBasket().takeStone(this);
+
     	}
     }
 }
