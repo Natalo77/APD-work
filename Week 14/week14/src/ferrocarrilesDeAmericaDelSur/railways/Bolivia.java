@@ -51,8 +51,11 @@ public class Bolivia extends Railway {
 					//Remove your 'permission-request stone' before having a siesta.
 					this.getBasket().takeStone(this);
 
-					//take a siesta.
-					siesta();
+					//take a siesta until it's this train's turn.
+					while(!getSharedBasket().hasStone(this))
+					{
+						siesta();
+					}
 
 					//put your 'permission-request stone' back in your own basket.
 					this.getBasket().putStone(this);

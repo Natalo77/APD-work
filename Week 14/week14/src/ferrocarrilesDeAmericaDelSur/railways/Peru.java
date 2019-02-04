@@ -40,7 +40,7 @@ public class Peru extends Railway {
             }
 
             //Put a 'permission-request stone' in his own basket.
-            this.getBasket().putStone(this);
+            getBasket().putStone(this);
 
     		//if the other basket has a stone in (other rail is requesting permission)
             while(otherRail.getBasket().hasStone(otherRail))
@@ -49,13 +49,16 @@ public class Peru extends Railway {
                 if(getSharedBasket().hasStone(otherRail))
                 {
                     //Remove your 'permission-request stone' before having a siesta.
-                    this.getBasket().takeStone(this);
+                    getBasket().takeStone(this);
 
-                    //take a siesta.
-                    siesta();
+                    //take a siesta until it's this train's turn.
+                    while(!getSharedBasket().hasStone(this))
+                    {
+                        siesta();
+                    }
 
                     //put your 'permission-request stone' back in your own basket.
-                    this.getBasket().putStone(this);
+                    getBasket().putStone(this);
                 }
             }
 
@@ -67,7 +70,7 @@ public class Peru extends Railway {
             getSharedBasket().putStone(otherRail);
 
             //remove the 'permission-request stone' from your own basket.
-            this.getBasket().takeStone(this);
+            getBasket().takeStone(this);
 
     	}
     }
