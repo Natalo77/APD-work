@@ -33,26 +33,41 @@ public class Bolivia extends Railway {
 			//Find out what the other railway is
 			Railway otherRail = getRailwaySystem().getNextRailway(this);
 
-			//Put a stone in his own basket.
+			//if it's no-one's turn, it is Bolivia's turn.
+			if(!getSharedBasket().hasStone(this) && !getSharedBasket().hasStone(otherRail))
+			{
+				getSharedBasket().putStone(this);
+			}
+
+			//Put a 'permission-request stone' in his own basket.
 			this.getBasket().putStone(this);
 
-			//if the other basket has a stone in
+			//if the other basket has a stone in (other rail is requesting permission)
 			while(otherRail.getBasket().hasStone(otherRail))
 			{
-				//Remove the stone before having a siesta.
-				this.getBasket().takeStone(this);
+				//if it's not bolivia's turn as designated by the shared basket.
+				if(getSharedBasket().hasStone(otherRail))
+				{
+					//Remove your 'permission-request stone' before having a siesta.
+					this.getBasket().takeStone(this);
 
-				//take a siesta.
-				siesta();
+					//take a siesta.
+					siesta();
 
-				//put the stone back in immediately after.
-				this.getBasket().putStone(this);
+					//put your 'permission-request stone' back in your own basket.
+					this.getBasket().putStone(this);
+				}
 			}
 
 			//cross the pass
 			crossPass();
 
-			//remove the stone from your own basket.
+
+			//It is now the other rail's turn
+			getSharedBasket().takeStone(this);
+			getSharedBasket().putStone(otherRail);
+
+			//remove the 'permission-request stone' from your own basket.
 			this.getBasket().takeStone(this);
 
 		}

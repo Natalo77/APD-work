@@ -18,7 +18,7 @@ public abstract class Railway extends Thread {
 	private Delay delay; // the delay used by this railway
 
 	private Position position; // the position of the train on this railway
-	
+
 	public Railway(String name,Delay delay) {
 		this.name = name;
 		this.delay = delay;
