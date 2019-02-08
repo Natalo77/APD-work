@@ -85,6 +85,7 @@ public class Buffer<T>
             succeeded = putItem(item);    // add the data item
             criticalSection.vote();   // make the buffer available again
             noOfElements.vote(); // there is now one more element in the buffer
+
         } catch (InterruptedException ie) {
             throw new BufferError("Buffer: Data item " + item + " could not be added to the buffer.\n" +
                                   "\t" + ie.getMessage());
