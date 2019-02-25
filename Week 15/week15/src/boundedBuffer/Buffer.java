@@ -80,12 +80,11 @@ public class Buffer<T>
     public boolean put(T item) throws BufferError, SemaphoreLimitError {
         boolean succeeded = false;
         try {
-            noOfSpaces.poll();  // is there space in the buffer?
             criticalSection.poll();   // is the buffer available?
+            noOfSpaces.poll();  // is there space in the buffer?
             succeeded = putItem(item);    // add the data item
             criticalSection.vote();   // make the buffer available again
             noOfElements.vote(); // there is now one more element in the buffer
-
         } catch (InterruptedException ie) {
             throw new BufferError("Buffer: Data item " + item + " could not be added to the buffer.\n" +
                                   "\t" + ie.getMessage());
