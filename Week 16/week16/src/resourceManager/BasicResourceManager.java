@@ -64,7 +64,7 @@ public abstract class BasicResourceManager implements ResourceManager
             numberWaiting[priority] = 0;            
         }
         numberOfUsers = 0;
-        usesLeft = random.nextInt(maxUses)+1;
+        usesLeft = maxUses; //random.nextInt(maxUses)+1;
     }
     
     /**
