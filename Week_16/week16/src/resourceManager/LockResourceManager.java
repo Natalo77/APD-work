@@ -14,6 +14,7 @@ public class LockResourceManager extends BasicResourceManager
 {
     final Lock prioritylock;
     final Condition[] prioritiesConds = new Condition[11];
+    private boolean inUse;
 
 
     /**
@@ -30,6 +31,7 @@ public class LockResourceManager extends BasicResourceManager
         {
             prioritiesConds[x] = prioritylock.newCondition();
         }
+        inUse = false;
     }
 
     @Override
@@ -42,63 +44,62 @@ public class LockResourceManager extends BasicResourceManager
 
 
         prioritylock.lock();
-        increaseNumberWaiting(priority);
 
-        int numberKnownUsersAbove;
         try
         {
-            numberKnownUsersAbove = getKnownUsersAbove(priority);
-            while (numberKnownUsersAbove > 0)
+            while (inUse)
             {
-                //increaseNumberWaiting(priority);
+                increaseNumberWaiting(priority);
                 prioritiesConds[priority].await();
-                numberKnownUsersAbove = getKnownUsersAbove(priority);
-                //decreaseNumberWaiting(priority);
             }
 
+            inUse = true;
             useResource(getRandomTime());
-            decreaseNumberWaiting(priority);
         } catch (InterruptedException e)
         {
             e.printStackTrace();
         }
+        finally
+        {
+            prioritylock.unlock();
+        }
+
+
 
     }
 
     @Override
     public int releaseResource() throws ResourceError
     {
-        for(int x = 0; x < NO_OF_PRIORITIES; x++)
+        prioritylock.lock();
+        int returnInt = NONE_WAITING;
+        try
         {
-            if(getNumberWaiting(x) > 0)
+            for (int x = 10; x >= 0; x--)
             {
+                if (getNumberWaiting(x) > 0)
+                {
 
-                prioritiesConds[x].signal();
-                prioritylock.unlock();
-                return x;
+                    prioritiesConds[x].signal();
+                    decreaseNumberWaiting(x);
+                    break;
+                }
             }
         }
+        finally
+        {
+            prioritylock.unlock();
+            inUse = false;
 
-        prioritylock.unlock();
-        return NONE_WAITING;
+        }
+
+        return returnInt;
+
     }
 
     private int getRandomTime()
     {
         Random randTime = new Random();
         return randTime.nextInt(1);
-    }
-
-    private int getKnownUsersAbove(int priority)
-    {
-
-        int total = 0;
-        for(int x = 0; x < priority - 1; x++)
-        {
-            total += getNumberWaiting(x);
-        }
-
-
-        return total;
     }
 }
